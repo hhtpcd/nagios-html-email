@@ -1,6 +1,8 @@
 Opsview HTML Email Template
 ---------------------------
 
+All credit goes to [https://github.com/Voxer/nagios-html-email](https://github.com/Voxer/nagios-html-email) as this is a simple fork and modification of a few lines to get the script working with Opsview.
+
 Generate HTML emails for Opsview service and host alerts.
 This is a forked version of the nagios-html-email nodejs script with amendments for Opsview.
 
