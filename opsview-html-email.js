@@ -2,11 +2,12 @@
 /**
  * Generate notifications for host or services via nagios
  * and output raw email data suitable for passing to
- * something like `mailx -t`
+ * something like `sendmail -t`
  *
  * Author: Dave Eddy <dave@daveeddy.com>
- * Date: 2/3/2014
- * Licens: MIT
+ * Contributor: Harry Hodge <harry@harryhodge.co.uk>
+ * Date: 2014-06-10
+ * License: MIT
  */
 
 var fs = require('fs');
@@ -20,7 +21,7 @@ var package = require('./package');
 
 function usage() {
   return [
-    'Usage: nagios-html-email [options] <service|host> [arg1] [arg2] ...',
+    'Usage: opsview-html-email [options] [arg1] [arg2] ...',
     '',
     'This command is meant to be run from nagios when a service or host',
     'experiences problems.  The output will be suitable for passing to',
@@ -71,8 +72,16 @@ while ((option = parser.getopt()) !== undefined) {
 }
 var args = process.argv.slice(parser.optind());
 
-// the notification type, typically 'host' or 'subject'
-var type = args.shift();
+// the notification type, typically 'host' or 'service'
+// var type = args.shift();
+// Type is now determined by the existence of NAGIOS_SERVICEATTEMPT env variable
+// You aren't able to determine service vs host alerts in the same way as Nagios.
+if (!process.env.NAGIOS_SERVICEATTEMPT) {
+  var type = 'host'
+} else {
+  var type = 'service'
+}
+// Can probably remove this check, as by this point var type should be assigned
 if (!type) {
   console.error('a type must be specified as the first argument!');
   console.error();
@@ -141,7 +150,7 @@ var templ = '<html><body><pre><%= d %></pre></body></html>';
 data.d = JSON.stringify(data, null, 2);
 try {
   message = ejs.render(templ, data);
-} catch (e) {
+} catch(e) {
   message = util.format('error rendering default template!: %s', e.message);
   console.error(message);
 }

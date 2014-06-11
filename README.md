@@ -1,51 +1,93 @@
-Nagios HTML Email Template
---------------------------
+Opsview HTML Email Template
+---------------------------
 
-Generate HTML emails for Nagios service and host alerts
+Generate HTML emails for Opsview service and host alerts.
+This is a forked version of the nagios-html-email nodejs script with amendments for Opsview.
+
+Instead of choosing service vs hosts notification method in commands.cfg, service or host check is determined by the existence of the env variable passed to the notification script, ```NAGIOS_SERVICEATTEMPT``` which should be null for host checks.
+
+Opsview
+-------
+
+Opsview is based on Nagios however notifications and configuration is handled differently. Opsview has done away with the .cfg files and all the configuration takes place in the web interface. Any changes that get made to the .cfg files will mostly get overwritten.
+
+The installation into the commands.cfg, or misccommands.cfg for Opsview gets overwritten on a reload. For the nagios installation instructions please see [Voxer/nagios-html-email](https://github.com/voxer/nagios-html-template) on Github.
+
+The modifications I have made will stop this working with Nagios.
+
+Tested on Opsview Core 3.20131016.0.14175-1precise1 on Ubuntu 12.04 LTS as of 2014-06-10.
+
+Installation
+------------
+
+Generate HTML emails for Opsview service and host alerts
 
 - [Quick Start Guide](#quick-start-guide)
 - [Screenshots](#screenshots)
 - [Advanced Usage](#advanced-usage)
-	- [Custom Subject](#custom-subject)
-	- [Alleviation Steps](#alleviation-steps)
+    - [Custom Subject](#custom-subject)
+    - [Alleviation Steps](#alleviation-steps)
 - [Custom Templates](#custom-templates)
-	- [Rendering](#rendering)
-	- [Testing](#testing)
+    - [Rendering](#rendering)
+    - [Testing](#testing)
 - [Common Problems](#common-problems)
 - [License](#license)
 
 Quick Start Guide
 -----------------
 
-Install this package on your nagios server
-
-    [sudo] npm install -g nagios-html-email
-
-And modify `commands.cfg` (or similar) to use this program
+Requires nodejs and npm. Install with your package manager. Below is for Ubuntu
 
 ``` bash
-define command {
-    command_name notify-service-by-email
-    command_line nagios-html-email service http://nagios.example.com | mailx -t
-}
-define command {
-    command_name notify-host-by-email
-    command_line nagios-html-email host http://nagios.example.com | mailx -t
-}
+$ ~ sudo apt-get update; sudo apt-get install nodejs npm
 ```
 
-The second argument of `http://nagios.example.com` is optional, and if supplied, should be
-the base URI of your Nagios instance.  If present, it will result
-in extra links in the email generated like like "acknowledge alert", "view all
-alerts", etc.
+Install this package on your opsview server
 
-Restart Nagios, and you should get fancy HTML email alerts.  If something
-doesn't work, check the [Common Problems](#common-problems) section below for
-possible solutions. The most common problem is `nagios-html-email` isn't in the
-PATH of the Nagios server.
+``` bash
+$ ~ sudo npm install -g opsview-html-email
+```
+
+Check that the nagios-html-email script is in the path of the nagios user.
+
+``` bash
+$ ~ which opsview-html-email
+/usr/bin/opsview-html-email
+```
+In `/usr/local/nagios/libexec/notifications` create a symlink to the script
+
+``` bash
+$ ~ ln -s /usr/bin/opsview-html-email /usr/local/nagios/libexec/notifications/opsview-html-email
+```
+You can now test this from the command line, but first you will need to export some environment variables for the script to use. This is only for testing. See the Testing section below for better testing.
+
+``` bash
+export NAGIOS_HOSTALIAS="test server alias"
+export NAGIOS_CONTACTEMAIL="your.email@domain"
+export NAGIOS_NOTIFICATIONTYPE='WARNING'
+export NAGIOS_SERVICEDESC='CPU Utilisation'
+export NAGIOS_HOSTADDRESS='prod1-database.domain'
+export NAGIOS_SERVICESTATE='SKY IS FALLING'
+export NAGIOS_SERVICEDURATION='15'
+export NAGIOS_SERVICEOUTPUT='CPU is 678%'
+export NAGIOS_LONGDATETIME='2014-06-10 15:39'
+```
+Now you can run
+``` bash
+$ ~ opsview-html-email your-opsview-host.domain | sendmail -t
+```
+You may have to change sendmail for the mail daemon configured on your server. You can also not pipe to sendmail to see the raw HTML output.
+
+Now in your Opsview web interface, add a new Notification method. Name it whatever suits and add the command as
+``` opsview-html-email your-opsview-server.domain | sendmail -t```
+
+You should be able to add your new notification method to existing or new notification profiles and start generating HTML emails from Opsview. I added mine alongside existing notification methods in case it didn't work so I still recieved alerts.
+
+Have a look at the troubleshooting section if your emails come through as just JSON or raise an issue.
 
 Screenshots
 -----------
+**I have updated the templates slightly so they will appear different to the screenshots here. Only slightly though.**
 
 A critical service
 
@@ -62,86 +104,7 @@ Host recovery
 Advanced Usage
 --------------
 
-Note that these tips are only useful if you use the builtin templates supplied
-by this program, or use the variables that the builtin templates use.
-
-### Custom Subject
-
-A custom subject can be set by setting a `_subject` attribute on the host
-or service that is generating the alert, for example:
-
-``` bash
-define service {
-    use                 generic-service
-    hostgroup_name      server
-    service_description SSH
-    check_command       check_ssh
-    _subject            ssh
-}
-```
-
-Now, whenever the `check_ssh` service generates an alert, it will be sent with
-the subject of simply `ssh`, regardless of notification type or service state.
-This is convenient for threaded email clients (like gmail), as all emails
-about the `check_ssh` service will be grouped in the same thread.
-
-``` bash
-define host {
-    host_name  prod-box-1.voxer.com
-    use        generic-host
-    hostgroups server
-    _subject   prod box 1
-}
-```
-
-Same as above, except for a host notification for `prod-box-1.voxer.com`.
-Whenever this host generates a notification, it will be sent with the simple
-subject of `prod box 1`.
-
-At Voxer, we use the `_subject` attribute of services and not hosts.
-
-### Alleviation Steps
-
-At Voxer, we use Chef to manage our Nagios instance, and as such, programatically
-generate Nagios services for each production service we have.  All of our production
-services are uniquely named like fooservice1, fooservice2, fooservice3, etc. regardless of
-the host that runs the service, so a separate Nagios service must be created for each
-production service.
-
-One of the things we check is memory usage on a per process basis.  Every node process
-running in production is set to warn us when it passes a certain threshold of RSS on the box,
-and under typical circumstances we just get a core dump of the process, and restart it.
-
-After we have a couple core dumps, it becomes unecassary to waste time dumping core,
-so we just restart the troubled programs before they become a issue.
-
-Since the "alleviation" steps are pretty much the same for each service, but we don't
-want this to happen automatically (imagine if every service restarted at the same time...
-that would be bad), we just add an `_alleviate` attribute to each service, that the
-builtin template knows how to render.  For example:
-
-``` bash
-define service {
-    use                 generic-service
-    host_name           prod-box-1
-    service_description fooservice1 RSS
-    check_command       check_voxer_rss!fooservice1
-    _subject            fooservice
-    _alleviate          ssh prod-box-1 sudo svcadm -v restart fooservice1
-}
-```
-
-Now, whenever an email is generated for the service when it is not `OK`, extra
-lines will be added that look like:
-
-```
-the following steps may possibly alleviate the issue
-
-ssh prod-box-1 sudo svcadm -v restart fooservice1
-```
-
-However, it is still up to the recipient of this alert to determine if this is the
-best course of action.
+I have skipped the advanced usage step for now as I haven't found out if it works with Opsview yet. Will add in later following some testing!
 
 Custom Templates
 ----------------
@@ -172,45 +135,6 @@ A custom template dir, if you supply one, should contain at least a
 `host.html.ejs` and `service.html.ejs` file for host and service alerts
 respectively.
 
-### Testing
-
-To test out custom templates, it's easiest to clone this repo and use the
-the example environmental variables for a fake Nagios alert.
-
-First
-
-    git clone git://github.com/Voxer/nagios-html-email.git
-    cd nagios-html-email
-    npm install
-
-Next, edit the templates
-
-    $ vim templates/*.html.ejs
-    ... edit edit edit ...
-    :wq
-
-Then, run `make` to generate test templates
-
-    $ make
-    . test/service.env && ./nagios-html-email.js service | awk 'NR > 5' > service.html
-    . test/host.env && ./nagios-html-email.js host | awk 'NR > 5' > host.html
-    $ ls *.html
-    host.html     service.html
-
-Now you can open both HTML files to see what the templates looks like when they are rendered
-
-    open *.html
-
-Or, if you prefer, you can do this manually with the following
-
-    . test/service.env
-    ./nagios-html-email.js service > service.html
-    open service.html || xdg-open service.html
-
-Repeat the edit and testing steps until your templates look good, and then you can
-call the globally installed `nagios-html-email` program with `-t /path/to/your/templates`
-to use your newly created templates.
-
 Common Problems
 ---------------
 
@@ -234,6 +158,8 @@ must expliticly cast any values you know to be numbers, booleans,
 dates, etc. to their correct data type.
 
 ### I've disabled environmental variables for performance reasons
+
+**Not sure if this works with Opsview. Haven't tested or found a need for this in my server. **
 
 You can still use this program, just pass the variables you would like to
 use as command line arguments, and access them in your template as

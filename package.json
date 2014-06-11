@@ -1,13 +1,22 @@
 {
-  "name": "nagios-html-email",
+  "name": "opsview-html-email",
   "version": "0.0.1",
-  "description": "Generate HTML emails for Nagios service and host alerts",
+  "keywords": [
+    "opsview",
+    "email",
+    "nagios"
+  ],
+  "description": "Generate HTML emails for Opsview service and host alerts",
   "author": "Dave Eddy <dave@daveeddy.com> (http://www.daveeddy.com)",
-  "repository": "git://github.com/Voxer/nagios-html-email.git",
+  "contributors": [{
+    "name": "Harry Hodge",
+    "email": "harry@harryhodge.co.uk"
+    }],
+  "repository": "git://github.com/hhtpcd/nagios-html-email.git",
   "license": "MIT",
   "preferGlobal": true,
   "bin": {
-    "nagios-html-email": "./nagios-html-email.js"
+    "opsview-html-email": "./opsview-html-email.js"
   },
   "dependencies": {
     "posix-getopt": "~1.0.0",
