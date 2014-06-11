@@ -12,7 +12,7 @@
     "name": "Harry Hodge",
     "email": "harry@harryhodge.co.uk"
     }],
-  "repository": "git://github.com/hhtpcd/nagios-html-email.git",
+  "repository": "git://github.com/hhtpcd/opsview-html-email.git",
   "license": "MIT",
   "preferGlobal": true,
   "bin": {
