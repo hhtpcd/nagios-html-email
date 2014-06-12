@@ -18,8 +18,8 @@ The installation into the commands.cfg, or misccommands.cfg for Opsview gets ove
 The modifications I have made will stop this working with Nagios.
 
 Tested on Opsview Core 3.20131016.0.14175-1precise1 on Ubuntu 12.04 LTS as of 2014-06-10.
-
-Installation
+a
+Ianstallation
 ------------
 
 Generate HTML emails for Opsview service and host alerts
@@ -35,7 +35,7 @@ Generate HTML emails for Opsview service and host alerts
 - [Common Problems](#common-problems)
 - [License](#license)
 
-Quick Start Guide
+Quaick Start Guide
 -----------------
 
 Requires nodejs and npm. Install with your package manager. Below is for Ubuntu
@@ -50,7 +50,7 @@ Install this package on your opsview server
 $ ~ sudo npm install -g opsview-html-email
 ```
 
-Check that the nagios-html-email script is in the path of the nagios user.
+Check that the opsview-html-email script is in the path of the nagios user.
 
 ``` bash
 $ ~ which opsview-html-email
