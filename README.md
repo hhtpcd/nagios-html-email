@@ -19,7 +19,7 @@ The modifications I have made will stop this working with Nagios.
 
 Tested on Opsview Core 3.20131016.0.14175-1precise1 on Ubuntu 12.04 LTS as of 2014-06-10.
 a
-Ianstallation
+Installation
 ------------
 
 Generate HTML emails for Opsview service and host alerts
@@ -35,7 +35,7 @@ Generate HTML emails for Opsview service and host alerts
 - [Common Problems](#common-problems)
 - [License](#license)
 
-Quaick Start Guide
+Quick Start Guide
 -----------------
 
 Requires nodejs and npm. Install with your package manager. Below is for Ubuntu
