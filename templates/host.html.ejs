@@ -32,8 +32,12 @@ td { padding:5px;}
 <body>
 <br />
 <div class="header">
-<span style="background-color: <%= colors.host[nagios.HOSTSTATE] %>; padding: 1px 5px;"><%= nagios.HOSTSTATE %></span> -
-<strong><%= nagios.HOSTALIAS.split('.')[0] %></strong>
+<table>
+<tr>
+<td style="background-color: <%= colors.host[nagios.HOSTSTATE] %>;"><%= nagios.HOSTSTATE %></td>
+<td><strong><%= nagios.HOSTALIAS.split('.')[0] %></strong></td>
+</tr>
+</table>
 </div>
 <br />
 <br />
