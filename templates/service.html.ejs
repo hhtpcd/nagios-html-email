@@ -5,7 +5,7 @@ var baseuri = args[0];
 var colors = {
         service: {
                 OK: '#88d066',
-                WARNING: '#ffff00',
+                WARNING: '#fff900',
                 CRITICAL: '#f88888',
                 UNKNOWN: '#ffbb55'
         },
@@ -37,8 +37,12 @@ td { padding:5px;}
 <body>
 <br />
 <div class="header">
-<span style="background-color: <%= colors.service[nagios.SERVICESTATE] %>; padding: 1px 5px;"><%= nagios.SERVICESTATE %></span> -
-<strong><%= nagios.HOSTALIAS.split('.')[0] %> <%= nagios.SERVICEDESC %></strong>
+<table>
+<tr>
+<td style="background-color: <%= colors.service[nagios.SERVICESTATE] %>;"><%= nagios.SERVICESTATE %></td>
+<td><strong><%= nagios.HOSTALIAS.split('.')[0] %> <%= nagios.SERVICEDESC %></strong></td>
+</tr>
+</table>
 </div>
 <br />
 <br />
