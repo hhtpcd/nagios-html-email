@@ -83,6 +83,8 @@ You may have to change sendmail for the mail daemon configured on your server. Y
 Now in your Opsview web interface, add a new Notification method. Name it whatever suits and add the command as
 ``` opsview-html-email your-opsview-server.domain | sendmail -t```
 
+Also add EMAIL as a variable underneath. Otherwise the NAGIOS_CONTACTEMAIL env variable will not get passed into the script, and your emails will get sent to dummy@localhots
+
 You should be able to add your new notification method to existing or new notification profiles and start generating HTML emails from Opsview. I added mine alongside existing notification methods in case it didn't work so I still recieved alerts.
 
 Have a look at the troubleshooting section if your emails come through as just JSON or raise an issue.
