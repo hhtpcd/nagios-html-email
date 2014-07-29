@@ -72,6 +72,19 @@ while ((option = parser.getopt()) !== undefined) {
 }
 var args = process.argv.slice(parser.optind());
 
+// Get these early on for logic to determine ack
+// Extract env variables into array
+var nagios = {};
+Object.keys(process.env).forEach(function(key) {
+  if (key.indexOf('NAGIOS_') === 0)
+    nagios[key.replace(/^NAGIOS_/, '')] = process.env[key];
+});
+var data = {
+  args: args,
+  nagios: nagios,
+  package: package
+};
+
 // the notification type, typically 'host' or 'service'
 // var type = args.shift();
 // Type is now determined by the existence of NAGIOS_SERVICEATTEMPT env variable
@@ -79,9 +92,13 @@ var args = process.argv.slice(parser.optind());
 if (!process.env.NAGIOS_SERVICEATTEMPT) {
   var type = 'host'
 } else {
-  var type = 'service'
+    if (data.nagios.NOTIFICATIONAUTHOR) {
+        var type =  'ack'
+    } else {
+        var type = 'service'
+    }
 }
-// Can probably remove this check, as by this point var type should be assigned
+
 if (!type) {
   console.error('a type must be specified as the first argument!');
   console.error();
@@ -97,41 +114,31 @@ if (!opts.to) {
   process.exit(1);
 }
 
-// extract nagios environmental variables
-var nagios = {};
-Object.keys(process.env).forEach(function(key) {
-  if (key.indexOf('NAGIOS_') === 0)
-    nagios[key.replace(/^NAGIOS_/, '')] = process.env[key];
-});
-var data = {
-  args: args,
-  nagios: nagios,
-  package: package
-};
 
 // create the subject if `-s` is not supplied
 if (!opts.subject) {
-  // look for _subject on the host or service and prefer that if it exists
-  var key = util.format('_%sSUBJECT', type.toUpperCase());
-  opts.subject = data.nagios[key];
-  if (!opts.subject) {
-    switch (type) {
-      case 'host':
-        opts.subject = util.format('%s is %s',
-            data.nagios.HOSTALIAS,
-            data.nagios.HOSTSTATE);
-        break;
-      case 'service':
-        opts.subject = util.format('%s - %s %s',
-            data.nagios.SERVICESTATE,
-            data.nagios.HOSTALIAS,
-            data.nagios.SERVICEDESC);
-        break;
-      default:
-        opts.subject = util.format('unknown type - %s',
-            type);
-        break;
-    }
+  switch (type) {
+    case 'host':
+      opts.subject = util.format('%s is %s',
+          data.nagios.HOSTADDRESS,
+          data.nagios.HOSTSTATE);
+      break;
+    case 'service':
+      opts.subject = util.format('%s: %s - %s',
+          data.nagios.SERVICESTATE,
+          data.nagios.HOSTADDRESS,
+          data.nagios.SERVICEDESC);
+      break;
+    case 'ack':
+      opts.subject = util.format('%s: %s - %s',
+          data.nagios.NOTIFICATIONTYPE,
+          data.nagios.HOSTADDRESS,
+          data.nagios.SERVICEDESC);
+      break;
+    default:
+      opts.subject = util.format('unknown type - %s',
+          type);
+      break;
   }
 }
 
@@ -169,3 +176,4 @@ try {
 
 // dump the message to stdout
 console.log(message);
+
