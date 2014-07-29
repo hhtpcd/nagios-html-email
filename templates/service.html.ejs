@@ -5,9 +5,10 @@ var baseuri = args[0];
 var colors = {
         service: {
                 OK: '#88d066',
-                WARNING: '#ffff00',
+                WARNING: '#FFDB58',
                 CRITICAL: '#f88888',
-                UNKNOWN: '#ffbb55'
+                UNKNOWN: '#ffbb55',
+                ACKNOWLEDGE: '#FF99FF'
         },
         table: {
                 0: '#f4f4f4',
@@ -31,18 +32,24 @@ var keys = [
 <style>
 body {font-family:Arial, sans-serif;}
 td { padding:5px;}
-.header {font-size: 21px;}
+.header {font-size: 22px;}
 .bigger {font-weight: bold;}
+.alert-message {font-family: monospace;font-size:14px;line-height: 30px;}
 </style>
 <body>
 <br />
 <div class="header">
-<span style="background-color: <%= colors.service[nagios.SERVICESTATE] %>; padding: 1px 5px;"><%= nagios.SERVICESTATE %></span> -
-<strong><%= nagios.HOSTALIAS.split('.')[0] %> <%= nagios.SERVICEDESC %></strong>
+<table>
+<tr>
+<td style="background-color: <%= colors.service[nagios.SERVICESTATE] %>; border: 1px solid black;"><strong><%= nagios.SERVICESTATE %></strong></td>
+<td><%= nagios.HOSTADDRESS.split('.')[0] %> <%= nagios.SERVICEDESC %></td>
+</tr>
+</table>
 </div>
 <br />
-<br />
-<pre style="font-size: 9pt"><%= nagios.SERVICEOUTPUT %></pre>
+<span class="alert-message">
+<%= nagios.SERVICEOUTPUT %>
+</span>
 <br />
 <% if (nagios.NOTIFICATIONAUTHOR && nagios.NOTIFICATIONCOMMENT) { -%>
 <strong>[<%= nagios.NOTIFICATIONTYPE === 'ACKNOWLEDGEMENT' ? 'acknowledgement' : 'comment' %>]
@@ -55,7 +62,7 @@ td { padding:5px;}
 <pre style="font-size: 9pt"><%= nagios._SERVICEALLEVIATE %></pre>
 <br />
 <% } -%>
-<table style="min-width: 500px;">
+<table style="min-width: 500px;font-size:14px;">
 <%
 var i = 0;
 keys.forEach(function(key) {
@@ -63,7 +70,7 @@ if (!nagios[key])
 return;
 -%>
 <tr style="background-color: <%= colors.table[i^=1] %>;">
-<td class="bigger"><%= key.toLowerCase() %></td>
+<td><strong><%= key.toLowerCase() %></strong></td>
 <td><%= nagios[key] %></td>
 </tr>
 <% }); -%>
@@ -83,3 +90,4 @@ return;
 </div>
 </body>
 </html>
+

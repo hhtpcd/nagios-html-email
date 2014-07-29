@@ -1,6 +1,4 @@
-<%
-// nagios base URI, ex http://nagios.example.com
-var baseuri = args[0];
+rgs[0];
 // colors to use for the email
 var colors = {
     host: {
@@ -26,14 +24,14 @@ var colors = {
 <style>
 body {font-family:Arial, sans-serif;}
 td { padding:5px;}
-.header {font-size: 21px;}
+.header {font-size: 25px;}
 .bigger {font-weight: bold;}
 </style>
 <body>
 <br />
 <div class="header">
-<span style="background-color: <%= colors.host[nagios.HOSTSTATE] %>; padding: 1px 5px;"><%= nagios.HOSTSTATE %></span> -
-<strong><%= nagios.HOSTALIAS.split('.')[0] %></strong>
+<span style="background-color: <%= colors.host[nagios.HOSTSTATE] %>; padding: 1px 5px; border: 1px solid black;"><%= nagios.HOSTSTATE %></span> -
+<strong><%= nagios.HOSTADDRESS.split('.')[0] %></strong>
 </div>
 <br />
 <br />
@@ -70,3 +68,4 @@ return;
 </div>
 </body>
 </html>
+
