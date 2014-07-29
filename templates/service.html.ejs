@@ -5,7 +5,11 @@ var baseuri = args[0];
 var colors = {
         service: {
                 OK: '#88d066',
+<<<<<<< HEAD
                 WARNING: '#FFDB58',
+=======
+                WARNING: '#fff900',
+>>>>>>> 139b989efcaac7aec63eaffb3532bcf2f15957ee
                 CRITICAL: '#f88888',
                 UNKNOWN: '#ffbb55',
                 ACKNOWLEDGE: '#FF99FF'
@@ -41,8 +45,13 @@ td { padding:5px;}
 <div class="header">
 <table>
 <tr>
+<<<<<<< HEAD
 <td style="background-color: <%= colors.service[nagios.SERVICESTATE] %>; border: 1px solid black;"><strong><%= nagios.SERVICESTATE %></strong></td>
 <td><%= nagios.HOSTADDRESS.split('.')[0] %> <%= nagios.SERVICEDESC %></td>
+=======
+<td style="background-color: <%= colors.service[nagios.SERVICESTATE] %>;"><%= nagios.SERVICESTATE %></td>
+<td><strong><%= nagios.HOSTALIAS.split('.')[0] %> <%= nagios.SERVICEDESC %></strong></td>
+>>>>>>> 139b989efcaac7aec63eaffb3532bcf2f15957ee
 </tr>
 </table>
 </div>
@@ -90,4 +99,7 @@ return;
 </div>
 </body>
 </html>
+<<<<<<< HEAD
 
+=======
+>>>>>>> 139b989efcaac7aec63eaffb3532bcf2f15957ee

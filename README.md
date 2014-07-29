@@ -19,7 +19,7 @@ The modifications I have made will stop this working with Nagios.
 
 Tested on Opsview Core 3.20131016.0.14175-1precise1 on Ubuntu 12.04 LTS as of 2014-06-10.
 a
-Ianstallation
+Installation
 ------------
 
 Generate HTML emails for Opsview service and host alerts
@@ -35,7 +35,7 @@ Generate HTML emails for Opsview service and host alerts
 - [Common Problems](#common-problems)
 - [License](#license)
 
-Quaick Start Guide
+Quick Start Guide
 -----------------
 
 Requires nodejs and npm. Install with your package manager. Below is for Ubuntu
@@ -82,6 +82,8 @@ You may have to change sendmail for the mail daemon configured on your server. Y
 
 Now in your Opsview web interface, add a new Notification method. Name it whatever suits and add the command as
 ``` opsview-html-email your-opsview-server.domain | sendmail -t```
+
+Also add EMAIL as a variable underneath. Otherwise the NAGIOS_CONTACTEMAIL env variable will not get passed into the script, and your emails will get sent to dummy@localhots
 
 You should be able to add your new notification method to existing or new notification profiles and start generating HTML emails from Opsview. I added mine alongside existing notification methods in case it didn't work so I still recieved alerts.
 
