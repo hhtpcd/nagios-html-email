@@ -176,4 +176,3 @@ try {
 
 // dump the message to stdout
 console.log(message);
-
