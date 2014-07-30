@@ -4,10 +4,11 @@ var baseuri = args[0];
 // colors to use for the email
 var colors = {
         service: {
-                OK: '#88d066',
-                WARNING: '#FFDB58',
-                CRITICAL: '#F55555',
-                UNKNOWN: '#ffbb55'
+            OK: '#88d066',
+            WARNING: '#FFDB58',
+            CRITICAL: '#f88888',
+            UNKNOWN: '#ffbb55',
+            ACKNOWLEDGEMENT: '#FF99FF'
         },
         table: {
                 0: '#f4f4f4',
@@ -40,7 +41,7 @@ td { padding:5px;}
 <div class="header">
 <table>
 <tr>
-<td style="background-color: <%= colors.service[nagios.SERVICESTATE] %>; border: 1px solid black;"><strong><%= nagios.SERVICESTATE %></strong></td>
+<td style="background-color: <%= colors.service[nagios.NOTIFICATIONTYPE] %>; border: 1px solid black;"><strong><%= nagios.NOTIFICATIONTYPE %></strong></td>
 <td><%= nagios.HOSTADDRESS.split('.')[0] %> <%= nagios.SERVICEDESC %></td>
 </tr>
 </table>
